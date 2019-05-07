@@ -5,6 +5,7 @@ from django.contrib import admin
 class Form(models.Model):
     name = models.CharField(max_length=100)
     description = models.CharField(max_length=1000)
+    total_questions = models.PositiveSmallIntegerField(default=0)
 
 class FormResponse(models.Model):
     form = models.ForeignKey(
