@@ -16,6 +16,9 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
+from cerver.views.forms import handle_response_backend
+
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('collect/forms/<int:form_id>/response', handle_response_backend),
 ]
