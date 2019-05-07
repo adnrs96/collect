@@ -19,10 +19,12 @@ from django.urls import path
 from cerver.views.forms import (
     handle_response_backend,
     handle_form_creation,
+    handle_form_add_question,
 )
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('collect/forms', handle_form_creation),
+    path('collect/forms/<int:form_id>/add_question', handle_form_add_question),
     path('collect/forms/<int:form_id>/response', handle_response_backend),
 ]
