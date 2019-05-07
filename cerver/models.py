@@ -58,6 +58,9 @@ class Response(models.Model):
     class Meta:
         unique_together = (('form_response', 'question'),)
 
+def get_form_by_id(id: int) -> Form:
+    return Form.objects.filter(id=id).first()
+
 admin.site.register(Form)
 admin.site.register(Question)
 admin.site.register(FormResponse)

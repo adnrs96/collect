@@ -1,7 +1,11 @@
 from django.http import HttpRequest, HttpResponse, JsonResponse
 from cerver.serializers import FormSerializer, QuestionSerializer
-from cerver.actions import do_create_form, do_create_question
-from cerver.models import Question
+from cerver.actions import (
+    do_create_form, do_create_question, do_create_form_response,
+    bulk_create_responses,
+)
+from django.db import transaction
+from cerver.models import Question, get_form_by_id, Response
 import json
 
 def handle_response_backend(request: HttpRequest, form_id: int) -> HttpResponse:
@@ -9,8 +13,52 @@ def handle_response_backend(request: HttpRequest, form_id: int) -> HttpResponse:
         res = JsonResponse({'msg': 'Only POST requests accepted.'})
         res.status_code = 403
         return res
-    print(json.loads(request.body))
-    res = JsonResponse({'msg': 'Reached code to execute save'})
+    form = get_form_by_id(form_id)
+    if form is None:
+        res = JsonResponse({'msg': 'Form not found.'})
+        res.status_code = 404
+        return res
+
+    form_response = do_create_form_response(form)
+
+    data = json.loads(request.body)
+    response_dict = data[str(form_id)]
+    form_questions = list(form.form_questions.all())
+    responses = []
+
+    if len(form_questions) != len(response_dict):
+        res = JsonResponse({'msg': 'Invalid Form submission'})
+        res.status_code = 400
+        return res
+
+    for q_id, value in response_dict.items():
+        # Since number of questions in a form in real world are going to be
+        # pretty much in the range of 100 at most we will just use a linear
+        # search without adding too much CPU time.
+        status = 1
+        for question in form_questions:
+            if question.id == int(q_id):
+                try:
+                    response = Response(form_response=form_response,
+                                        question=question,
+                                        value=value)
+                except:
+                    res = JsonResponse({'msg': 'Invalid Form submission'})
+                    res.status_code = 400
+                    return res
+
+                responses.append(response)
+                status = 0
+                break
+        if status:
+            res = JsonResponse({'msg': 'Invalid Form submission'})
+            res.status_code = 400
+            return res
+
+    with transaction.atomic():
+        bulk_create_responses(responses)
+        form_response.update(is_response_stored=True)
+    res = JsonResponse({'msg': 'Response stored.', 'form_response_id': form_response.id})
     res.status_code = 200
     return res
 
