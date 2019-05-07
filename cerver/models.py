@@ -6,6 +6,13 @@ class Form(models.Model):
     name = models.CharField(max_length=100)
     description = models.CharField(max_length=1000)
 
+class FormResponse(models.Model):
+    form = models.ForeignKey(
+        Form,
+        related_name='responses',
+        on_delete=models.CASCADE
+    )
+
 class Question(models.Model):
     qheadline = models.CharField(max_length=150)
     qdescription = models.CharField(max_length=500)
@@ -33,3 +40,4 @@ class Question(models.Model):
 
 admin.site.register(Form)
 admin.site.register(Question)
+admin.site.register(FormResponse)
