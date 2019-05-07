@@ -53,6 +53,9 @@ class Response(models.Model):
 
     value = models.CharField(max_length=1000, blank=True)
 
+    class Meta:
+        unique_together = (('form_response', 'question'),)
+
 admin.site.register(Form)
 admin.site.register(Question)
 admin.site.register(FormResponse)
