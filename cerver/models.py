@@ -12,6 +12,7 @@ class FormResponse(models.Model):
         related_name='responses',
         on_delete=models.CASCADE
     )
+    is_response_stored = models.BooleanField(default=False)
 
 class Question(models.Model):
     qheadline = models.CharField(max_length=150)
