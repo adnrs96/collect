@@ -15,7 +15,7 @@ class FormResponse(models.Model):
 
 class Question(models.Model):
     qheadline = models.CharField(max_length=150)
-    qdescription = models.CharField(max_length=500)
+    qdescription = models.CharField(max_length=500, blank=True)
 
     TEXT = 1
     INT = 2
