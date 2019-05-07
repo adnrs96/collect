@@ -38,6 +38,22 @@ class Question(models.Model):
         on_delete=models.CASCADE
     )
 
+class Response(models.Model):
+    form_response = models.ForeignKey(
+        FormResponse,
+        related_name='answers',
+        on_delete=models.CASCADE
+    )
+
+    question = models.ForeignKey(
+        Question,
+        related_name='responses',
+        on_delete=models.CASCADE
+    )
+
+    value = models.CharField(max_length=1000, blank=True)
+
 admin.site.register(Form)
 admin.site.register(Question)
 admin.site.register(FormResponse)
+admin.site.register(Response)
