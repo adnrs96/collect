@@ -8,6 +8,42 @@ from django.db import transaction
 from cerver.models import Question, get_form_by_id, Response
 import json
 
+def handle_form_display(request: HttpRequest, form_id: int) -> HttpResponse:
+    if request.method != 'GET':
+        res = JsonResponse({'msg': 'Only GET requests accepted.'})
+        res.status_code = 403
+        return res
+
+    form = get_form_by_id(form_id)
+    if form is None:
+        res = JsonResponse({'msg': 'Form not found.'})
+        res.status_code = 404
+        return res
+
+    form_questions = list(form.form_questions.all())
+    questions = []
+    for form_question in form_questions:
+        questions.append(
+            {
+                'qid': form_question.id,
+                'qhead': form_question.qheadline,
+                'qdesc': form_question.qdescription,
+                'qtype': form_question.question_type,
+            }
+        )
+
+    data = {
+        'msg': 'success',
+        'id': form.id,
+        'name': form.name,
+        'description': form.description,
+        'questions': questions,
+    }
+
+    res = JsonResponse(data)
+    res.status_code = 200
+    return res
+
 def handle_response_backend(request: HttpRequest, form_id: int) -> HttpResponse:
     if request.method != 'POST':
         res = JsonResponse({'msg': 'Only POST requests accepted.'})

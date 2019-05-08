@@ -20,6 +20,7 @@ from cerver.views.forms import (
     handle_response_backend,
     handle_form_creation,
     handle_form_add_question,
+    handle_form_display,
 )
 from cerver.views.operations import (
     handle_post_busines_backend,
@@ -28,6 +29,7 @@ from cerver.views.operations import (
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('collect/forms', handle_form_creation),
+    path('collect/forms/<int:form_id>/', handle_form_display),
     path('collect/forms/<int:form_id>/add_question', handle_form_add_question),
     path('collect/forms/<int:form_id>/response', handle_response_backend),
     path('collect/forms/<int:form_id>/post_business', handle_post_busines_backend),
