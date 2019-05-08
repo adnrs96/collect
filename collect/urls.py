@@ -20,6 +20,7 @@ from cerver.views.forms import (
     handle_response_backend,
     handle_form_creation,
     handle_form_add_question,
+    handle_export,
 )
 
 urlpatterns = [
@@ -27,4 +28,5 @@ urlpatterns = [
     path('collect/forms', handle_form_creation),
     path('collect/forms/<int:form_id>/add_question', handle_form_add_question),
     path('collect/forms/<int:form_id>/response', handle_response_backend),
+    path('collect/forms/<int:form_id>/export', handle_export),
 ]
