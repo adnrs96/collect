@@ -128,7 +128,8 @@ def handle_response_backend(request: HttpRequest, form_id: int) -> HttpResponse:
 
     with transaction.atomic():
         bulk_create_responses(responses)
-        form_response.update(is_response_stored=True)
+        form_response.is_response_stored = True
+        form_response.save()
     res = JsonResponse({'msg': 'Response stored.', 'form_response_id': form_response.id})
     res.status_code = 200
     return res
