@@ -2,11 +2,46 @@ from django.http import HttpRequest, HttpResponse, JsonResponse
 from cerver.serializers import FormSerializer, QuestionSerializer
 from cerver.actions import (
     do_create_form, do_create_question, do_create_form_response,
-    bulk_create_responses,
+    bulk_create_responses, do_attach_ops_to_forms
 )
 from django.db import transaction
 from cerver.models import Question, get_form_by_id, Response
+from cerver.operations.operate import OPERATIONS_REGISTER
 import json
+
+def handle_form_op(request: HttpRequest, form_id: int) -> HttpResponse:
+    if request.method != 'POST':
+        res = JsonResponse({'msg': 'Only POST requests accepted.'})
+        res.status_code = 403
+        return res
+    form = get_form_by_id(form_id)
+    if form is None:
+        res = JsonResponse({'msg': 'Form not found.'})
+        res.status_code = 404
+        return res
+
+    data = json.loads(request.body)
+    if data['form_id'] != str(form_id):
+        res = JsonResponse({'msg': 'Form Mismatch.'})
+        res.status_code = 400
+        return res
+
+    ops = list(map(int, data["ops"]))
+    all_form_ops = list(map(lambda x: x.operation_register_id, list(form.operations.all())))
+    for op in ops:
+        if op not in OPERATIONS_REGISTER or op in all_form_ops:
+            res = JsonResponse({'msg': 'Invalid or duplicate op.'})
+            res.status_code = 400
+            return res
+
+
+    do_attach_ops_to_forms(form, ops)
+    data = {
+        'msg': 'success',
+    }
+    res = JsonResponse(data)
+    res.status_code = 200
+    return res
 
 def handle_form_display(request: HttpRequest, form_id: int) -> HttpResponse:
     if request.method != 'GET':

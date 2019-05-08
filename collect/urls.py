@@ -21,6 +21,7 @@ from cerver.views.forms import (
     handle_form_creation,
     handle_form_add_question,
     handle_form_display,
+    handle_form_op,
 )
 from cerver.views.operations import (
     handle_post_busines_backend,
@@ -35,4 +36,5 @@ urlpatterns = [
     path('collect/forms/<int:form_id>/response', handle_response_backend),
     path('collect/forms/<int:form_id>/post_business', handle_post_busines_backend),
     path('collect/forms/ops', handle_ops_display),
+    path('collect/forms/<int:form_id>/add_op', handle_form_op),
 ]
