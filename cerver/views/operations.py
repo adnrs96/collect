@@ -1,5 +1,5 @@
 from django.http import HttpRequest, HttpResponse, JsonResponse
-from cerver.operations.operate import handle_post_business_logic
+from cerver.operations.operate import handle_post_business_logic, OPERATIONS_REGISTER
 from cerver.models import get_form_by_id
 import json
 
@@ -21,5 +21,28 @@ def handle_post_busines_backend(request: HttpRequest, form_id: int) -> HttpRespo
     handle_post_business_logic(form)
 
     res = JsonResponse({'msg': 'Success'})
+    res.status_code = 200
+    return res
+
+def handle_ops_display(request: HttpRequest) -> HttpResponse:
+    if request.method != 'GET':
+        res = JsonResponse({'msg': 'Only POST requests accepted.'})
+        res.status_code = 403
+        return res
+
+    operations = []
+    for op_id, op in OPERATIONS_REGISTER.items():
+        operations.append(
+            {
+                'op_id': op_id,
+                'name': op['name']
+            }
+        )
+    data = {
+        'msg': 'success',
+        'operations': operations,
+    }
+
+    res = JsonResponse(data)
     res.status_code = 200
     return res
