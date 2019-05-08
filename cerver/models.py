@@ -61,6 +61,13 @@ class Response(models.Model):
     class Meta:
         unique_together = (('form_response', 'question'),)
 
+class FormOperation(model.Models):
+    form = models.ForeignKey(
+        Form,
+        related_name='operations',
+        on_delete=models.CASCADE
+    )
+    
 def get_form_by_id(id: int) -> Form:
     return Form.objects.filter(id=id).first()
 
