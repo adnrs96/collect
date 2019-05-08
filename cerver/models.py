@@ -85,6 +85,9 @@ class FormOperation(models.Model):
         default=POST_BUSINESS
     )
 
+    class Meta:
+        unique_together = (('form', 'operation_register_id'),)
+
 def get_form_by_id(id: int) -> Form:
     return Form.objects.filter(id=id).first()
 
