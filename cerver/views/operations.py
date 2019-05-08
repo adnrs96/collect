@@ -18,7 +18,12 @@ def handle_post_busines_backend(request: HttpRequest, form_id: int) -> HttpRespo
     # In future we could potentially make use of POST data for figuring if we
     # wanna exclude/include some ops apart from what's in the FormOperation
 
-    handle_post_business_logic(form)
+    try:
+        handle_post_business_logic(form)
+    except Exception as e:
+        res = JsonResponse({'msg': e})
+        res.status_code = 500
+        return res
 
     res = JsonResponse({'msg': 'Success'})
     res.status_code = 200

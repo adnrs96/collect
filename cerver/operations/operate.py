@@ -24,4 +24,4 @@ def handle_post_business_logic(form: Form) -> None:
         responses, ok = handler.apply_operation(form, responses)
 
         if ok == '':
-            raise 'Error Occured while performing ' + OPERATIONS_REGISTER[op.operation_register_id]['name']
+            raise Exception('Error Occured while performing ' + OPERATIONS_REGISTER[op.operation_register_id]['name'])
