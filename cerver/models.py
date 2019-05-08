@@ -1,3 +1,4 @@
+from typing import List
 from django.db import models
 from django.contrib import admin
 
@@ -86,6 +87,16 @@ class FormOperation(models.Model):
 
 def get_form_by_id(id: int) -> Form:
     return Form.objects.filter(id=id).first()
+
+def get_all_responses(form: Form) -> List[List[Response]]:
+    form_responses = list(form.responses.all())
+
+    responses = []
+
+    for form_response in form_responses:
+        responses.append(list(form_response.answers.all()))
+
+    return responses
 
 admin.site.register(Form)
 admin.site.register(Question)
