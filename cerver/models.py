@@ -61,13 +61,29 @@ class Response(models.Model):
     class Meta:
         unique_together = (('form_response', 'question'),)
 
-class FormOperation(model.Models):
+class FormOperation(models.Model):
     form = models.ForeignKey(
         Form,
         related_name='operations',
         on_delete=models.CASCADE
     )
-    
+    operation_register_id = models.PositiveSmallIntegerField(default=0)
+
+    VALIDATION = 1
+    POST_VALIDATION = 2
+    POST_BUSINESS = 3
+
+    PHASE_TYPES = (
+        (VALIDATION, 'Operation(s) executes on validation stage before any response is stored.'),
+        (POST_VALIDATION, 'Operation(s) executes immediately after storage is successful.'),
+        (POST_BUSINESS, 'Operation(s) Triggered by specific command and executes on Response Collective'),
+    )
+
+    phase_type = models.PositiveSmallIntegerField(
+        choices=PHASE_TYPES,
+        default=POST_BUSINESS
+    )
+
 def get_form_by_id(id: int) -> Form:
     return Form.objects.filter(id=id).first()
 
