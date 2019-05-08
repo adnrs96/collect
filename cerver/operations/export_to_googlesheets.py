@@ -35,7 +35,7 @@ def authenticate_and_get_service():
 
     return service
 
-def export(form: Form) -> int:
+def apply_operation(form: Form, responses: List[List[Response]]) -> int:
     # Call the Sheets API and create a sheet for the given form
     spreadsheet = {
         'properties': {
@@ -52,11 +52,9 @@ def export(form: Form) -> int:
         label_row.append(str(question))
     values.append(label_row)
 
-    form_responses = list(form.responses.all())
-    for form_response in form_responses:
+    for answers in responses:
         row = []
-        responses = (form_response.answers.all())
-        for response in responses:
+        for response in answers:
             row.append(response.value)
         values.append(row)
 
@@ -70,4 +68,5 @@ def export(form: Form) -> int:
     result = service.spreadsheets().values().update(
         spreadsheetId=spreadsheet_id,
         valueInputOption="RAW", range='A1', body=body).execute()
-    return result.get('updatedCells')
+
+    return responses, ('Updated %d cells' % (result.get('updatedCells')))
