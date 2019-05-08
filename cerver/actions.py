@@ -2,6 +2,7 @@ from typing import List
 from cerver.models import Form, Question, FormResponse, Response, FormOperation
 from cerver.operations.operate import OPERATIONS_REGISTER
 from django.db.models import F
+from django.db import transaction
 
 def do_create_form(name: str, description: str) -> Form:
     form = Form(name=name, description=description)
@@ -16,8 +17,10 @@ def do_create_question(qheadline: str,
                         qdescription=qdescription,
                         question_type=question_type,
                         form=form)
-    question.save()
-    form.update(total_questions=F('total_questions') + 1)
+    with transaction.atomic():
+        question.save()
+        form.total_questions = F('total_questions') + 1
+        form.save()
     return question
 
 def do_create_form_response(form: Form) -> FormResponse:
