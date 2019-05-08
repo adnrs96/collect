@@ -6,7 +6,6 @@ from cerver.actions import (
 )
 from django.db import transaction
 from cerver.models import Question, get_form_by_id, Response
-from cerver.operations.export_to_googlesheets import export
 import json
 
 def handle_response_backend(request: HttpRequest, form_id: int) -> HttpResponse:
@@ -113,11 +112,3 @@ def handle_form_add_question(request: HttpRequest, form_id: int) -> HttpResponse
     res = JsonResponse({'msg': 'Question created.', 'question_id': new_question.id})
     res.status_code = 200
     return res
-
-def handle_export(request: HttpRequest, form_id: int) -> HttpResponse:
-    form = get_form_by_id(form_id)
-    if form is None:
-        res = JsonResponse({'msg': 'Form not found.'})
-        res.status_code = 404
-        return res
-    export(form)
